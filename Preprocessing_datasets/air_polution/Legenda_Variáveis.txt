@@ -1,0 +1,27 @@
+Timestamp: Date and time of observation. 
+
+Date_observed: Date of observation. 
+
+Time_observed: Time of observation. 
+
+Latitude: Geographic latitude of the observation location. 
+
+Longitude: Geographic longitude of the observation location. 
+
+NO2: Nitrogen dioxide concentration. 
+
+NOx: Nitrogen oxides concentration. 
+
+O3: Ozone concentration. 
+
+Ox: Combined oxidants (ozone and NO2) concentration. 
+
+PM1: Particulate matter <1 micron concentration. 
+
+PM10: Particulate matter <10 microns concentration. 
+
+PM25: Particulate matter <2.5 microns concentration. 
+
+CO: Carbon monoxide concentration. 
+
+Local_name: Name of the observation location. 

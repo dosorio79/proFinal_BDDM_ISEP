@@ -1,0 +1,60 @@
+services:
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+
+  minio:
+    image: minio/minio
+    container_name: minio
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: password123
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    volumes:
+      - ./minio_data:/data
+
+  airflow:
+    build: .
+    container_name: airflow
+    depends_on:
+      - postgres
+      - minio
+    environment:
+      UID: ${UID}
+      GID: "0"
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:password123@postgres/postgres
+      AIRFLOW__CORE__FERNET_KEY: 'XiqzYhNqyMEE6Umh5RroLk1teFEUlsH4QMcvCyIpumI='
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__API__AUTH_BACKEND: 'airflow.api.auth.backend.basic_auth'
+      AIRFLOW__WEBSERVER__ADMIN_USER: "admin"
+      AIRFLOW__WEBSERVER__ADMIN_PASSWORD: "admin"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+    command: >
+      bash -c "
+      mkdir -p /opt/airflow/logs/scheduler &&
+      mkdir -p /opt/airflow/logs/webserver &&
+      airflow db init &&
+      airflow scheduler &
+      airflow webserver
+      "
+
+volumes:
+  postgres_data:
+  minio_data:
